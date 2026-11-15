@@ -1,0 +1,23 @@
+# Compilación de comprobación en macOS, SIN FIRMA.
+# Para instalar en iPhone mediante TestFlight se debe agregar firma iOS
+# con una cuenta Apple Developer activa desde Codemagic.
+workflows:
+  ios-check:
+    name: "Obratek 0.0.004 - validar iOS sin firma"
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: "Generar soporte nativo iOS en macOS"
+        script: |
+          flutter create --project-name obratek_app --org cl.obratek --platforms=ios .
+      - name: "Descargar dependencias"
+        script: flutter pub get
+      - name: "Compilar demo iOS sin firma"
+        script: flutter build ios --release --no-codesign --dart-define=DEMO_MODE=true
+    artifacts:
+      - build/ios/iphoneos/*.app
+      - /tmp/xcodebuild_logs/*.log
